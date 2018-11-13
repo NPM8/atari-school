@@ -7,11 +7,15 @@ import { AppComponent } from './app.component';
 import { ClarityModule } from '@clr/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeComponent } from './components/home/home.component';
+import { MagazinePageComponent } from './components/magazine-page/magazine-page.component';
+import { MagazinesListComponent } from './components/magazines-list/magazines-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    MagazinePageComponent,
+    MagazinesListComponent
   ],
   imports: [
     BrowserModule,

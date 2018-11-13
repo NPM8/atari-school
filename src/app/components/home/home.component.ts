@@ -20,6 +20,6 @@ export class HomeComponent implements OnInit {
 
   private getMagList() {
       this.magService.getMagazineList()
-          .subscribe(magasines => this.magList = magasines);
+          .subscribe(magasines => { this.magList = magasines; console.log(magasines); });
   }
 }

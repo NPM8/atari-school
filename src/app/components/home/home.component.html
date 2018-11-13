@@ -5,25 +5,24 @@
         </h1>
     </div>
 </div>
-{{magList}}
 <div class="clr-row clr-justify-content-center">
     <ng-template *ngIf="magList.length === 0; then LoadingBlock else NormalBlock"></ng-template>
     <ng-template #LoadingBlock>
-        <div class="clr-col-sm-2">
+        <div class="clr-col">
             Loading ...
         </div>
     </ng-template>
-    <ng-template #NormalBlock ngFor="let mag og magList">
-        <div class="clr-col-sm-4">
-            <a href="/{{mag.name}}" class="card clickable">
-                <div class="card-block">
-                    <p class="card-header">
-                        {{mag.name}}
-                    </p>
-                </div>
+    <ng-template #NormalBlock >
+        <div class="clr-col-sm-2" *ngFor="let mag of magList">
+            <a href="/{{mag.Name}}" class="card clickable dis-card">
                 <div class="card-img">
-                    <img src="{{mag.img}}" alt="lol" />
+                    <img src="{{mag.Img}}" alt="lol" />
                 </div>
+                <!--<div class="card-body text-center">-->
+                    <!--<h1 class="card-text">-->
+                        <!--{{mag.Name}}-->
+                    <!--</h1>-->
+                <!--</div>-->
             </a>
         </div>
     </ng-template>

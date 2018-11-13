@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,6 +11,16 @@ import (
 	xl "github.com/antchfx/xmlquery"
 )
 
+func addCorsHeader(res http.ResponseWriter) {
+    headers := res.Header()
+    headers.Add("Access-Control-Allow-Origin", "*")
+    headers.Add("Vary", "Origin")
+    headers.Add("Vary", "Access-Control-Request-Method")
+    headers.Add("Vary", "Access-Control-Request-Headers")
+    headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token")
+    headers.Add("Access-Control-Allow-Methods", "GET, POST,OPTIONS")
+}
+
 func main() {
 
 	type Mag struct {
@@ -18,8 +29,12 @@ func main() {
 	}
 
 	type Handler struct {
-		Name string
-	}
+		Name string `json:"name"`
+    }
+
+    type YearsHandler struct {
+        Years []string `json:years`
+    }
 
 	f, err := os.Open("./czasopisma.xml")
 	if err != nil {
@@ -31,7 +46,10 @@ func main() {
 	}
 
 	http.HandleFunc("/magazines/list", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+        w.Header().Set("Access-Control-Allow-Methods", "*")
+        w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With,content-type")
 		var tmp []Mag
 		for _, n := range xl.Find(doc, "//zmienne/*") {
 			var inTmp Mag
@@ -43,11 +61,37 @@ func main() {
 	})
 
 	http.HandleFunc("/magazines/get/years", func(w http.ResponseWriter, r *http.Request) {
+        addCorsHeader(w)
+        if r.Method == "OPTIONS" {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
 		w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+        w.Header().Set("Access-Control-Allow-Methods", "*")
+        w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With,content-type")
 
-		var handler Handler
-
-		json.NewDecoder(r.Body).Decode(handler)
+        var handler Handler
+        if r.Body == nil {
+            http.Error(w, "Please send a request body", 400)
+            return
+        }
+        err := json.NewDecoder(r.Body).Decode(&handler)
+        if err != nil {
+            http.Error(w, err.Error(), 400)
+            return
+        }
+        fmt.Println(handler.Name)
+        // err := json.NewDecoder(r.Body).Decode(&handler)
+        // if err != nil {
+        //     panic(err)
+        // }
+        // fmt.Sprintf("%s/%s","//lata",handler.Name)
+        fmt.Print(handler.Name)
+        lata := xl.FindOne(doc, "//lata/"+handler.Name).InnerText()
+        var years YearsHandler
+        years.Years = strings.Split(lata, ",")
+        json.NewEncoder(w).Encode(years)
 	})
 
 	log.Fatal(http.ListenAndServe(":9000", nil))
