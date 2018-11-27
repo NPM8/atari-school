@@ -1,3 +1,58 @@
-<p>
-  magazines-list works!
-</p>
+<ng-template *ngIf="mags.length === 0; then loadingBlock else mainBlock"></ng-template>
+<ng-template #loadingBlock>
+    <div class="clr-col-auto">
+            <span class="spinner spinner-inline">
+                Loading...
+            </span>
+
+        <span>
+                Loading...
+            </span>
+    </div>
+</ng-template>
+<ng-template #mainBlock>
+    <div class="clr-row clr-justify-content-center ">
+        <div class="clr-col-2 text-center p4 border-bottom pb-1">
+            Strona tytułowa
+        </div>
+        <div class="clr-col-1 text-center p4 border-bottom pb-1">
+            Plik
+        </div>
+        <div class="clr-col-3 text-center p4 border-bottom pb-1">
+            Pismo
+        </div>
+        <div class="clr-col-2 text-center p4 border-bottom pb-1">
+            Darczyńcy
+        </div>
+    </div>
+    <ng-container #mainBlock *ngFor="let item of mags" >
+            <ng-container [ngSwitch]="item.brak">
+                <div *ngSwitchDefault class="clr-row clr-justify-content-center">
+                    <div class="clr-col-auto"> {{item.brak}} </div>
+                </div>
+                <div *ngSwitchCase="''" class="clr-row clr-justify-content-center">
+                    <div class="clr-justify-content-center clr-col-2 clr-flex-column p3">
+                        <img src="{{item.miniaturka}}" alt="magmin">
+                    </div>
+                    <div class="clr-justify-content-center clr-col-1 clr-flex-column p3">
+                        <p><span class="p4">Format: </span><span >{{item.format}}</span></p>
+                        <p><span class="p4">Stron: </span><span>{{item.stron}}</span></p>
+                        <p><span class="p4">Plik: </span><span><a href="{{item.plik}}">Tutaj</a></span></p>
+                    </div>
+                    <div class="clr-col-3 clr-justify-content-center clr-flex-column p3">
+                        <p><span class="p4">Nazwa: </span><span>{{item.nazwa}}</span></p>
+                        <p><span class="p4">Numer: </span><span>{{item.numer}}</span></p>
+                        <p><span class="p4">Wydawca: </span><span>{{item.wydawca}}</span></p>
+                    </div>
+                    <div class="clr-col-2 clr-justify-content-center clr-flex-column p3">
+                        <p><span class="p4">Skan: </span><span>{{item.skan}}</span></p>
+                        <p><span class="p4">Przetworzenie: </span><span>{{item.przetworzenie}}</span></p>
+                        <p><span class="p4">Podesłał: </span><span>{{item.podeslal}}</span></p>
+                    </div>
+                </div>
+            </ng-container>
+    </ng-container>
+</ng-template>
+<div class="clr-row clr-justify-content-center">
+    <button class="clickable clr-col-auto button-back" (click)="goBack()" (mouseenter)="changeHover()" (mouseleave)="changeHover()"><clr-icon shape="step-forward-2" [className]=" isHover ? 'hovered': ''" flip="horizontal" title="Go back" size="36"></clr-icon></button>
+</div>

@@ -29,16 +29,17 @@ func main() {
 	}
 
 	type Mgazineobj struct {
-		Nazwa         string
-		Numer         string
-		Wydawca       string
-		Format        string
-		Stron         string
-		Miniaturka    string
-		Plik          string
-		Skan          string
-		Przetworzenie string
-		Podeslal      string
+		Nazwa         string `json:"nazwa"`
+		Numer         string `json:"numer"`
+		Wydawca       string `json:"wydawca"`
+		Format        string `json:"format"`
+		Stron         string `json:"stron"`
+		Miniaturka    string `json:"miniaturka"`
+		Plik          string `json:"plik"`
+		Skan          string `json:"skan"`
+		Przetworzenie string `json:"przetworzenie"`
+		Podeslal      string `json:"podeslal"`
+		Brak          string `json:"brak"`
 	}
 
 	type Handler struct {
@@ -103,12 +104,12 @@ func main() {
 		// fmt.Sprintf("%s/%s","//lata",handler.Name)
 		fmt.Print(handler.Name)
 		lata := xl.FindOne(doc, "//lata/"+handler.Name).InnerText()
-		var years YearsHandler
-		years.Years = strings.Split(lata, ",")
+		var years []string
+		years = strings.Split(lata, ",")
 		json.NewEncoder(w).Encode(years)
 	})
 
-	http.HandleFunc("/magazine/get/magazines", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/magazines/get/magazines", func(w http.ResponseWriter, r *http.Request) {
 		addCorsHeader(w)
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
@@ -130,15 +131,46 @@ func main() {
 			return
 		}
 		var tmp []Mgazineobj
+		var searchString string
 		switch handler.Year {
 		case "all":
+			searchString = fmt.Sprintf("//%s/*", handler.Name)
 			break
 		default:
-
+			searchString = fmt.Sprintf("//%s/*[@rok=%s]", handler.Name, handler.Year)
 		}
-		for _, n := range xl.Find(doc, fmt.Sprintf("//%s/*[@rok=%s]", handler.Name, handler.Year)) {
-
+		fmt.Println(searchString)
+		for _, n := range xl.Find(doc, searchString) {
+			fmt.Println(searchString)
+			var tmp2 Mgazineobj
+			if n.SelectAttr("brak") == "" {
+				tmp2.Brak = ""
+				tmp2.Numer = n.SelectElement("numer").InnerText()
+				tmp2.Nazwa = n.SelectElement("nazwa").InnerText()
+				tmp2.Wydawca = n.SelectElement("wydawca").InnerText()
+				tmp2.Stron = n.SelectElement("stron").InnerText()
+				tmp2.Format = n.SelectElement("format").InnerText()
+				tmp2.Miniaturka = fmt.Sprintf("%s%s/%s", "http://atarionline.pl/biblioteka/czasopisma/", handler.Name, n.SelectElement("miniaturka").InnerText())
+				tmp2.Plik = fmt.Sprintf("%s%s/%s", "http://atarionline.pl/biblioteka/czasopisma/", handler.Name, n.SelectElement("plik").InnerText())
+				tmp2.Skan = n.SelectElement("skan").InnerText()
+				tmp2.Przetworzenie = n.SelectElement("przetworzenie").InnerText()
+				tmp2.Podeslal = n.SelectElement("podeslal").InnerText()
+			} else {
+				tmp2.Brak = n.SelectAttr("brak")
+				tmp2.Numer = ""
+				tmp2.Nazwa = ""
+				tmp2.Wydawca = ""
+				tmp2.Stron = ""
+				tmp2.Format = ""
+				tmp2.Miniaturka = ""
+				tmp2.Plik = ""
+				tmp2.Skan = ""
+				tmp2.Przetworzenie = ""
+				tmp2.Podeslal = ""
+			}
+			tmp = append(tmp, tmp2)
 		}
+		json.NewEncoder(w).Encode(tmp)
 	})
 
 	log.Fatal(http.ListenAndServe(":9000", nil))

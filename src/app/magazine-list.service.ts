@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import {Magazine} from './magazine';
 import {Years} from './years';
+import {Mgazineobj} from './mgazineobj';
 
 const httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -38,16 +39,17 @@ export class MagazineListService {
         };
     }
 
-    getMagzineYears(mag: string): Observable<Years> {
+    getMagzineYears(mag: string): Observable<string[]> {
         console.log(mag);
-        return this.http.post<Years>(this.magazineUrl + '/get/years', { name: mag }, httpOptions)
+        return this.http.post<string[]>(this.magazineUrl + '/get/years', { name: mag }, httpOptions)
             .pipe(tap(() => console.log(`get magzine mag=${mag}`)),
                 catchError(this.handleError('getMagazineYears', [])));
     }
-    getMagzines(mag: string): Observable<Years> {
+
+    getMagzines(mag: string, year: string): Observable<Mgazineobj[]> {
         console.log(mag);
-        return this.http.post<Years>(this.magazineUrl + '/get/years', { name: mag }, httpOptions)
-            .pipe(tap(() => console.log(`get magzine mag=${mag}`)),
+        return this.http.post<Mgazineobj[]>(this.magazineUrl + '/get/magazines', { name: mag , year:  year}, httpOptions)
+            .pipe(tap(() => console.log(`get magazine mag=${mag}`)),
                 catchError(this.handleError('getMagazineYears', [])));
     }
 }

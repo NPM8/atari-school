@@ -9,4 +9,5 @@ export class Mgazineobj {
     skan: string;
     przetworzenie: string;
     podeslal: string;
+    brak: string;
 }

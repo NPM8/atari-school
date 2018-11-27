@@ -6,13 +6,14 @@
             <span class="spinner spinner-inline">
                 Loading...
             </span>
+
             <span>
                 Loading...
             </span>
         </div>
     </ng-template>
     <ng-template #mainBlock>
-        <div class="clr-col" *ngFor="let year of years.Years">
+        <div class="clr-col" *ngFor="let year of years">
             <a href="/{{mag}}/{{year}}" class="card clickable">
                 <div class="card-block clr-justify-content-center">
                     <h1 class="card-text">{{year}}</h1>

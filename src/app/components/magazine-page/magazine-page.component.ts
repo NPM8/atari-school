@@ -14,7 +14,7 @@ import {Years} from '../../years';
 })
 export class MagazinePageComponent implements OnInit {
 
-    years: Years;
+    years: string[];
 
     mag: string;
 
